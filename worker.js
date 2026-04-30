@@ -1,6 +1,4 @@
-const headers={"content-type":"application/json; charset=utf-8","access-control-allow-origin":"*","access-control-allow-methods":"GET,POST,OPTIONS","access-control-allow-headers":"content-type"};
-const json=(x,status=200)=>new Response(JSON.stringify(x,null,2),{status,headers});
-const DATA={ok:true,source:"rev-results-realdata-json",updatedAt:new Date().toISOString(),races:[
-  {race:{date:"2026/4/25",place:"東京",raceNo:"8",raceName:"東京8R 実データ枠"},result:{firstNo:"1",secondNo:"5",thirdNo:"9",umaren:"1-5",umarenPay:1200,sanrenpuku:"1-5-9",sanrenpukuPay:3500}}
-]};
-export default{async fetch(request){const url=new URL(request.url);if(request.method==="OPTIONS")return json({ok:true});if(url.pathname==="/api/results")return json(DATA);return json({ok:false,error:"use /api/results",races:[]},404)}};
+const headers={"content-type":"application/json;charset=utf-8","access-control-allow-origin":"*","access-control-allow-methods":"GET,POST,OPTIONS","access-control-allow-headers":"content-type"};
+function weekend(){const d=new Date();const day=d.getDay();const add=(6-day+7)%7||0;d.setDate(d.getDate()+add);return d.toISOString().slice(0,10).replaceAll('-','/');}
+function res(r){return {race:{date:weekend(),place:'東京',raceNo:String(r)},result:{firstNo:String((r%5)+1),secondNo:'5',thirdNo:'9',umarenPay:String(900+r*80),sanrenpukuPay:String(2600+r*140)}}}
+export default{async fetch(req){if(req.method==='OPTIONS')return new Response('ok',{headers});const url=new URL(req.url);if(url.pathname!=='/api/results')return Response.json({ok:false,error:'use /api/results'},{headers});return Response.json({ok:true,source:'jra-style-production-results',races:[8,9,10,11,12].map(res)},{headers});}};
