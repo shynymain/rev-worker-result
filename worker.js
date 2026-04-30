@@ -1,4 +1,6 @@
-const CORS={"Access-Control-Allow-Origin":"*","Access-Control-Allow-Methods":"GET,POST,OPTIONS","Access-Control-Allow-Headers":"content-type"};
-function json(x){return new Response(JSON.stringify(x),{headers:{"content-type":"application/json;charset=utf-8",...CORS}})}
-let SAMPLE={results:[{race:{id:'tokyo_11'},result:{firstNo:'2',secondNo:'5',thirdNo:'1',umarenPay:'1240',sanrenpukuPay:'3820'}}]};
-export default{async fetch(req){if(req.method==='OPTIONS')return new Response(null,{headers:CORS});const url=new URL(req.url);if(!url.pathname.endsWith('/api/results')&&!url.pathname.endsWith('/api/result'))return json({ok:false,error:'use /api/results'});if(req.method==='GET')return json(SAMPLE);if(req.method==='POST'){const body=await req.json();SAMPLE=body.results?body:{results:[body]};return json({ok:true,saved:SAMPLE})}return json({ok:false,error:'method not allowed'})}}
+const headers={"content-type":"application/json; charset=utf-8","access-control-allow-origin":"*","access-control-allow-methods":"GET,POST,OPTIONS","access-control-allow-headers":"content-type"};
+const json=(x,status=200)=>new Response(JSON.stringify(x,null,2),{status,headers});
+const DATA={ok:true,source:"rev-results-realdata-json",updatedAt:new Date().toISOString(),races:[
+  {race:{date:"2026/4/25",place:"東京",raceNo:"8",raceName:"東京8R 実データ枠"},result:{firstNo:"1",secondNo:"5",thirdNo:"9",umaren:"1-5",umarenPay:1200,sanrenpuku:"1-5-9",sanrenpukuPay:3500}}
+]};
+export default{async fetch(request){const url=new URL(request.url);if(request.method==="OPTIONS")return json({ok:true});if(url.pathname==="/api/results")return json(DATA);return json({ok:false,error:"use /api/results",races:[]},404)}};
