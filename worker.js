@@ -1,17 +1,4 @@
-export default {
-  async fetch(request, env) {
-    const url = new URL(request.url);
-    if (url.pathname === "/" || url.pathname === "") return Response.json({ ok:true, service:"Rev Results Worker v3", endpoint:"/api/results" });
-    if (url.pathname !== "/api/results") return Response.json({ ok:false, error:"not found" }, {status:404});
-    const raceId = url.searchParams.get("raceId") || "sample";
-    const seed = hash(raceId);
-    const a = seed % 16 + 1;
-    const b = (seed*3) % 16 + 1;
-    const c = (seed*7) % 16 + 1;
-    const nums = [...new Set([a,b,c,5,14])].slice(0,3);
-    const result = { firstNo:String(nums[0]), secondNo:String(nums[1]), thirdNo:String(nums[2]), umarenNumbers:[String(nums[0]),String(nums[1])], sanrenpukuNumbers:nums.map(String), umarenPay:String(800 + (seed%60)*100), sanrenpukuPay:String(1800 + (seed%120)*100) };
-    return json({ ok:true, raceId, result });
-  }
-};
-function hash(s){let h=0; for(const ch of s) h=(h*31+ch.charCodeAt(0))>>>0; return h;}
-function json(obj){return new Response(JSON.stringify(obj),{headers:{"content-type":"application/json; charset=utf-8","access-control-allow-origin":"*"}})}
+const CORS={"Access-Control-Allow-Origin":"*","Access-Control-Allow-Methods":"GET,POST,OPTIONS","Access-Control-Allow-Headers":"content-type"};
+function json(x){return new Response(JSON.stringify(x),{headers:{"content-type":"application/json;charset=utf-8",...CORS}})}
+let SAMPLE={results:[{race:{id:'tokyo_11'},result:{firstNo:'2',secondNo:'5',thirdNo:'1',umarenPay:'1240',sanrenpukuPay:'3820'}}]};
+export default{async fetch(req){if(req.method==='OPTIONS')return new Response(null,{headers:CORS});const url=new URL(req.url);if(!url.pathname.endsWith('/api/results')&&!url.pathname.endsWith('/api/result'))return json({ok:false,error:'use /api/results'});if(req.method==='GET')return json(SAMPLE);if(req.method==='POST'){const body=await req.json();SAMPLE=body.results?body:{results:[body]};return json({ok:true,saved:SAMPLE})}return json({ok:false,error:'method not allowed'})}}
