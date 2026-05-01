@@ -1,8 +1,2 @@
-const headers = {"content-type":"application/json;charset=utf-8","access-control-allow-origin":"*","access-control-allow-methods":"GET,POST,OPTIONS","access-control-allow-headers":"content-type"};
-export default { async fetch(request) {
-  if(request.method === "OPTIONS") return new Response(JSON.stringify({ok:true}), {headers});
-  const url = new URL(request.url);
-  if(url.pathname === "/api/health") return new Response(JSON.stringify({ok:true,service:"result"}), {headers});
-  if(url.pathname === "/api/results") return new Response(JSON.stringify({ok:true,results:[{id:"race1",firstNo:"5",secondNo:"2",thirdNo:"14",umarenPay:1200,sanrenpukuPay:3500}]}), {headers});
-  return new Response(JSON.stringify({ok:false,error:"not found"}), {status:404,headers});
-}};
+const headers={"content-type":"application/json; charset=utf-8","access-control-allow-origin":"*","access-control-allow-methods":"GET,POST,OPTIONS","access-control-allow-headers":"content-type"};
+export default{async fetch(request){if(request.method==='OPTIONS')return new Response(JSON.stringify({ok:true}),{headers});const url=new URL(request.url);if(url.pathname==='/api/health')return Response.json({ok:true,service:'result'}, {headers});if(url.pathname==='/api/results')return new Response(JSON.stringify({ok:true,results:[{id:'race-auto-001',firstNo:'5',secondNo:'2',thirdNo:'14',umarenPay:1200,sanrenpukuPay:3500}]}),{headers});return new Response(JSON.stringify({ok:false,error:'not found'}),{status:404,headers})}};
